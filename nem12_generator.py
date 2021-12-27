@@ -1,7 +1,3 @@
-from nemreader import read_nem_file
-
-
-from os import write
 import random
 import csv
 import datetime
@@ -95,11 +91,5 @@ def write_to_csv(file_path:str, loop_time: int):
             nem12_300 = nem12_300_generate(i)
             nem_writer.writerow(nem12_300)
         nem_writer.writerow(nem12_900)
-write_to_csv("first_test.csv",100)
 
-# m = read_nem_file('first_test.csv')
 
-# for nmi in m.readings:
-#     for suffix in m.readings[nmi]:
-#         for reading in m.readings[nmi][suffix][-1:]:
-#             print(reading)
