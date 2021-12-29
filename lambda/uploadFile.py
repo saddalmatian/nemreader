@@ -17,7 +17,7 @@ def max_line_file(file_path: str) -> int:
     with open(file_path, 'r') as data_file:
         for line in data_file:
             max_line += 1
-    return max_line
+    return max_line 
 
 
 def split_nem12_file(file_path: str, line_quantity: int):
@@ -54,7 +54,6 @@ def split_nem12_file(file_path: str, line_quantity: int):
 
 
 def lambda_handler(event, context):
-    print(event)
     s3 = boto3.resource("s3")
     # Get bucket and key
     bucket = event["Records"][0]["s3"]["bucket"]["name"]
