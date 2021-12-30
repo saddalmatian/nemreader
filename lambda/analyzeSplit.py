@@ -114,8 +114,6 @@ def lambda_handler(event, context):
             )
             current_s3_objects = (response["KeyCount"])
             if(current_s3_objects == max_file-1):
-                # lambda_invoke = boto3.client('lambda')
-
                 # Start write raw data
                 m = read_nem_file('/tmp/'+formatted_key,
                                   quantity=order_number,
