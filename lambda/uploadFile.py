@@ -59,15 +59,19 @@ def lambda_handler(event, context):
     bucket = event["Records"][0]["s3"]["bucket"]["name"]
     key = event["Records"][0]["s3"]["object"]["key"]
     # Make necessary folder
-    if not path.isdir('tmp/original'):
+    if not path.isdir('/tmp/original'):
         os.mkdir('/tmp/original')
-    if not path.isdir('tmp/split'):
+    if not path.isdir('/tmp/split'):
         os.mkdir('/tmp/split')
     # Download file uploaded
     s3.meta.client.download_file(bucket, key, '/tmp/'+key)
     # Start split file
     file_path = '/tmp/'+key
-    split_nem12_file(file_path, 500)
+    max_line = max_line_file(file_path)
+    split_line_expected = round(max_line*0.0125)
+    if(split_line_expected < 5):
+        split_line_expected = 5
+    split_nem12_file(file_path, split_line_expected)
     # Upload splitted files to s3
     for file in os.listdir('/tmp/split'):
         s3.meta.client.upload_file(
