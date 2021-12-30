@@ -10,7 +10,7 @@ import json
 
 def main():
     # Generate nem12.csv
-    nem12_generator.write_to_csv("NEM12.csv", 10000)
+    nem12_generator.write_to_csv("NEM12.csv", 10)
 
     # use library and analyse
     # m = read_nem_file('NEM12.csv', 1)
@@ -22,7 +22,7 @@ def main():
 
     # spilt file and analyse
 
-    split_nem12_file('nem/NEM12.csv', 500)
+    split_nem12_file('NEM12.csv', 5)
     FILE_QUANTITY = get_file_quantity()
     data_container = {}
     for file_id in range(1, FILE_QUANTITY+1):
