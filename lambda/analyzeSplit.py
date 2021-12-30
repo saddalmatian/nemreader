@@ -47,10 +47,9 @@ def lambda_handler(event, context):
     key = event["Records"][0]["s3"]["object"]["key"]
     formatted_key = key.replace("%23", "#")
     # Get file order number
-    print(key.split("%23"))
     order_number = int(key.replace(".csv", "").split("%23")[3])
     # Make necessary folder
-    if not path.isdir('tmp/split'):
+    if not path.isdir('/tmp/split'):
         os.mkdir('/tmp/split')
     # Download file
     s3.meta.client.download_file(bucket, formatted_key, '/tmp/'+formatted_key)
@@ -75,12 +74,12 @@ def lambda_handler(event, context):
         connect_readings(data_container['readings'], m.readings)
         connect_transaction(data_container['transactions'], m.transactions)
         # Write raw data to file
-        f = open("/tmp/"+str(max_file)+"#NEM12#raw#"+str(order_number), 'w')
+        raw_file_name = str(max_file)+"#NEM12#raw#"+str(order_number)
+        f = open("/tmp/"+raw_file_name, 'w')
         f.write(json.dumps(data_container, default=str, indent=4))
-        s3.meta.client.upload_file('/tmp/'+str(max_file)+"#NEM12#raw#"+str(
-            order_number),
-            bucket,
-            'split/raw/'+str(max_file)+"#RAW#"+str(order_number)+".csv")
+        s3.meta.client.upload_file('/tmp/'+raw_file_name,
+                                   bucket,
+                                   'raw/'+raw_file_name+".csv")
 
     elif(order_number > 1 and order_number < max_file):
         # Start write raw data
@@ -93,17 +92,17 @@ def lambda_handler(event, context):
         connect_readings(data_container['readings'], m.readings)
         connect_transaction(data_container['transactions'], m.transactions)
         # Write raw data to file
-        f = open("/tmp/"+str(max_file)+"#NEM12#raw#"+str(order_number), 'w')
+        raw_file_name = str(max_file)+"#NEM12#raw#"+str(order_number)
+        f = open("/tmp/"+raw_file_name, 'w')
         f.write(json.dumps(data_container, default=str, indent=4))
-        s3.meta.client.upload_file('/tmp/'+str(max_file)+"#NEM12#raw#"+str(
-            order_number),
-            bucket,
-            'split/raw/'+str(max_file)+"#RAW#"+str(order_number)+".csv")
+        s3.meta.client.upload_file('/tmp/'+raw_file_name,
+                                   bucket,
+                                   'raw/'+raw_file_name+".csv")
 
     elif(order_number == max_file):
         response = client.list_objects_v2(
             Bucket=bucket,
-            Prefix='split/raw',
+            Prefix='raw/',
         )
         current_s3_objects = (response["KeyCount"])
         # while last file had not been uploaded to s3
@@ -111,7 +110,7 @@ def lambda_handler(event, context):
             # Get current objects in s3
             response = client.list_objects_v2(
                 Bucket=bucket,
-                Prefix='split/',
+                Prefix='raw/',
             )
             current_s3_objects = (response["KeyCount"])
         if(current_s3_objects == max_file-1):
@@ -127,14 +126,13 @@ def lambda_handler(event, context):
             connect_transaction(
                 data_container['transactions'], m.transactions)
             # Write raw data to file
-            f = open("/tmp/"+str(max_file) +
-                     "#NEM12#raw#"+str(order_number), 'w')
+            raw_file_name = str(max_file)+"#NEM12#raw#"+str(order_number)
+            f = open("/tmp/"+raw_file_name, 'w')
             f.write(json.dumps(data_container, default=str, indent=4))
             s3.meta.client.upload_file(
-                '/tmp/'+str(max_file)+"#NEM12#raw#"+str(
-                    order_number),
+                '/tmp/'+raw_file_name,
                 bucket,
-                'split/raw/'+str(max_file)+"#RAW#"+str(order_number)+".csv")
+                'raw/'+raw_file_name+".csv")
             # response = client.invoke(
             #     FunctionName='arn:aws:lambda:ap-southeast-1\
             #         :769253686157:function:analyzeRaw',
