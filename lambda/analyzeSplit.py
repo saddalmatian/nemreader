@@ -48,7 +48,7 @@ def lambda_handler(event, context):
     formatted_key = key.replace("%23", "#")
     # Get file order number
     order_number = int(key.replace(".csv", "").split("%23")[3])
-    # Make necessary folder
+    # Create necessary folder
     if not path.isdir('/tmp/split'):
         os.mkdir('/tmp/split')
     # Download file
@@ -63,6 +63,8 @@ def lambda_handler(event, context):
         # Start write raw data
         m = read_nem_file('/tmp/'+formatted_key,
                           quantity=order_number)
+        # Remove after read
+        os.remove('/tmp/'+formatted_key)
         contain_header = []
         for field in m.header:
             contain_header.append(str(field))
@@ -80,12 +82,17 @@ def lambda_handler(event, context):
         s3.meta.client.upload_file('/tmp/'+raw_file_name,
                                    bucket,
                                    'raw/'+raw_file_name+".json")
+        f.close()
+        # Remove after upload
+        os.remove("/tmp/"+raw_file_name)
 
     elif(order_number > 1 and order_number < max_file):
         # Start write raw data
         m = read_nem_file('/tmp/'+formatted_key,
                           quantity=order_number,
                           ignore_missing_header=True)
+        # Remove after read
+        os.remove('/tmp/'+formatted_key)
         # Link two readings and transactions into data_container
         data_container['readings'] = {}
         data_container['transactions'] = {}
@@ -98,6 +105,9 @@ def lambda_handler(event, context):
         s3.meta.client.upload_file('/tmp/'+raw_file_name,
                                    bucket,
                                    'raw/'+raw_file_name+".json")
+        f.close()
+        # Remove after upload
+        os.remove("/tmp/"+raw_file_name)
 
     elif(order_number == max_file):
         response = client.list_objects_v2(
@@ -131,9 +141,13 @@ def lambda_handler(event, context):
                     '/tmp/'+raw_file_name,
                     bucket,
                     'raw/'+raw_file_name+".json")
+                f.close()
+                # Remove after upload
+                os.remove("/tmp/"+raw_file_name)
                 client = boto3.client('lambda')
                 client.invoke(
                     FunctionName='arn:aws:lambda:ap-southeast-1:769253686157:function:analyzeRaw',
                     InvocationType='RequestResponse',
                     Payload=json.dumps({"Bucket": bucket})
                 )
+                break

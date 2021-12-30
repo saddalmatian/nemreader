@@ -72,7 +72,11 @@ def lambda_handler(event, context):
     if(split_line_expected < 5):
         split_line_expected = 5
     split_nem12_file(file_path, split_line_expected)
+    # Remove origin file in tmp
+    os.remove('/tmp/'+key)
     # Upload splitted files to s3
     for file in os.listdir('/tmp/split'):
         s3.meta.client.upload_file(
             '/tmp/split/'+file, bucket, 'split/'+str(FILE_QUANTITY)+"#"+file)
+        # Remove after uploaded
+        os.remove('/tmp/split/'+file)
