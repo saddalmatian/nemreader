@@ -79,7 +79,7 @@ def lambda_handler(event, context):
         f.write(json.dumps(data_container, default=str, indent=4))
         s3.meta.client.upload_file('/tmp/'+raw_file_name,
                                    bucket,
-                                   'raw/'+raw_file_name+".csv")
+                                   'raw/'+raw_file_name+".json")
 
     elif(order_number > 1 and order_number < max_file):
         # Start write raw data
@@ -97,7 +97,7 @@ def lambda_handler(event, context):
         f.write(json.dumps(data_container, default=str, indent=4))
         s3.meta.client.upload_file('/tmp/'+raw_file_name,
                                    bucket,
-                                   'raw/'+raw_file_name+".csv")
+                                   'raw/'+raw_file_name+".json")
 
     elif(order_number == max_file):
         response = client.list_objects_v2(
@@ -130,7 +130,7 @@ def lambda_handler(event, context):
                 s3.meta.client.upload_file(
                     '/tmp/'+raw_file_name,
                     bucket,
-                    'raw/'+raw_file_name+".csv")
+                    'raw/'+raw_file_name+".json")
                 client = boto3.client('lambda')
                 client.invoke(
                     FunctionName='arn:aws:lambda:ap-southeast-1:769253686157:function:analyzeRaw',
