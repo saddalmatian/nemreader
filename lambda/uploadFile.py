@@ -4,7 +4,7 @@ import csv
 from os import path
 # Prefix file when split into multiple files
 PREFIX_FILE = "NEM12#Split#"
-# Quantity of files after splited
+# Quantity of files after splitted
 FILE_QUANTITY = 0
 
 
