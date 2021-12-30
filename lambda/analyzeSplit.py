@@ -113,30 +113,29 @@ def lambda_handler(event, context):
                 Prefix='raw/',
             )
             current_s3_objects = (response["KeyCount"])
-        if(current_s3_objects == max_file-1):
-            # lambda_invoke = boto3.client('lambda')
+            if(current_s3_objects == max_file-1):
+                # lambda_invoke = boto3.client('lambda')
 
-            # Start write raw data
-            m = read_nem_file('/tmp/'+formatted_key,
-                              quantity=order_number,
-                              ignore_missing_header=True)
-            data_container['readings'] = {}
-            data_container['transactions'] = {}
-            connect_readings(data_container['readings'], m.readings)
-            connect_transaction(
-                data_container['transactions'], m.transactions)
-            # Write raw data to file
-            raw_file_name = str(max_file)+"#NEM12#raw#"+str(order_number)
-            f = open("/tmp/"+raw_file_name, 'w')
-            f.write(json.dumps(data_container, default=str, indent=4))
-            s3.meta.client.upload_file(
-                '/tmp/'+raw_file_name,
-                bucket,
-                'raw/'+raw_file_name+".csv")
-            # response = client.invoke(
-            #     FunctionName='arn:aws:lambda:ap-southeast-1\
-            #         :769253686157:function:analyzeRaw',
-            #     InvocationType='RequestResponse',
-            #     Payload=json.dumps()
-            # )
-            # print(response)
+                # Start write raw data
+                m = read_nem_file('/tmp/'+formatted_key,
+                                  quantity=order_number,
+                                  ignore_missing_header=True)
+                data_container['readings'] = {}
+                data_container['transactions'] = {}
+                connect_readings(data_container['readings'], m.readings)
+                connect_transaction(
+                    data_container['transactions'], m.transactions)
+                # Write raw data to file
+                raw_file_name = str(max_file)+"#NEM12#raw#"+str(order_number)
+                f = open("/tmp/"+raw_file_name, 'w')
+                f.write(json.dumps(data_container, default=str, indent=4))
+                s3.meta.client.upload_file(
+                    '/tmp/'+raw_file_name,
+                    bucket,
+                    'raw/'+raw_file_name+".csv")
+                client = boto3.client('lambda')
+                client.invoke(
+                    FunctionName='arn:aws:lambda:ap-southeast-1:769253686157:function:analyzeRaw',
+                    InvocationType='RequestResponse',
+                    Payload=json.dumps({"Bucket": bucket})
+                )
