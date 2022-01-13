@@ -9,7 +9,7 @@ That generator will generate a file named NEM12.csv
 
 Inside lambda folder, there are 3 file that you will need to upload on to aws lambda console.
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+____________________________________________________________________________
 
 I have only finished all the stuff with NEM12, NEM13 is not yet implemented\
 Please wait for me for the next version.
